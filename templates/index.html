@@ -1,0 +1,112 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A free 15-question career interests exploration quiz with practical next steps.">
+<title>Interest Explorer | Find Your Direction</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="site-shell">
+<nav class="topbar">
+<a class="brand" href="{{ url_for('index') }}">
+<span class="brand-mark">IE</span> Interest Explorer
+</a>
+<span class="nav-note">Personal discovery · No account needed</span>
+</nav>
+
+<main class="wrap">
+<section class="hero">
+<div class="eyebrow">CAREER DISCOVERY ASSESSMENT <span class="dot"></span> 15 QUESTIONS</div>
+<h1>Find a direction worth <em>exploring.</em></h1>
+<p class="lead">Not sure what you want to do? Explore what catches your attention, discover potential career directions, and get small projects to try for free.</p>
+<div class="hero-facts">
+<span>◷ &nbsp; 5–7 minutes</span>
+<span>◎ &nbsp; 5 interest areas</span>
+<span>◇ &nbsp; No right or wrong answers</span>
+</div>
+</section>
+
+{% if error %}
+<div class="alert" role="alert">{{ error }}</div>
+{% endif %}
+
+<form action="{{ url_for('results') }}" method="post" id="quiz">
+<div class="progress-panel">
+<div class="progress-top">
+<strong>Your progress</strong>
+<span id="progress-text" aria-live="polite">0 of 15 answered</span>
+</div>
+<div class="track" role="progressbar" aria-label="Quiz completion" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0" id="progress-track">
+<div id="progress-bar"></div>
+</div>
+<p>Choose the option you'd be most curious to try. <strong>“I'm not sure yet”</strong> is a valid answer.</p>
+</div>
+
+<div class="question-list">
+{% for prompt, choices in questions %}
+<fieldset class="question-card">
+<legend>
+<span class="q-number">{{ '%02d'|format(loop.index) }}</span>
+<span>{{ prompt }}</span>
+</legend>
+<div class="choices">
+{% set qi = loop.index0 %}
+{% for label, value in choices %}
+<label class="choice">
+<input type="radio" name="q{{ qi }}" value="{{ value }}" required>
+<span class="radio-visual"></span>
+<span>{{ label }}</span>
+</label>
+{% endfor %}
+<label class="choice unsure">
+<input type="radio" name="q{{ qi }}" value="unsure" required>
+<span class="radio-visual"></span>
+<span>I'm not sure yet</span>
+</label>
+</div>
+</fieldset>
+{% endfor %}
+</div>
+
+<div class="submit-panel">
+<div>
+<strong>Ready to see your interest snapshot?</strong>
+<p>Your answers are used to calculate the report in this browser session. No login required.</p>
+</div>
+<button type="submit">View my results <span aria-hidden="true">→</span></button>
+</div>
+</form>
+</main>
+
+<footer class="footer">
+A starting point for exploration — not a scientific aptitude test or career prediction.
+</footer>
+</div>
+
+<script>
+const radios = document.querySelectorAll('input[type="radio"]');
+
+function updateProgress() {
+    const n = new Set(
+        [...radios].filter(r => r.checked).map(r => r.name)
+    ).size;
+
+    document.getElementById('progress-text').textContent =
+        `${n} of 15 answered`;
+
+    document.getElementById('progress-bar').style.width =
+        (100 * n / 15) + '%';
+
+    document.getElementById('progress-track').setAttribute(
+        'aria-valuenow', n
+    );
+}
+
+radios.forEach(r => r.addEventListener('change', updateProgress));
+updateProgress();
+</script>
+</body>
+</html>
