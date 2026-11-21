@@ -1,0 +1,144 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your Interest Snapshot | Interest Explorer</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="site-shell">
+
+<nav class="topbar">
+<a class="brand" href="{{ url_for('index') }}">
+<span class="brand-mark">IE</span> Interest Explorer
+</a>
+<span class="nav-note">Your personal snapshot</span>
+</nav>
+
+<main class="wrap results">
+
+<section class="results-head">
+<div class="eyebrow">YOUR EXPLORATION REPORT</div>
+<h1>{{ headline }}</h1>
+<p class="lead">
+A snapshot of what interested you in these 15 questions
+— not a label for who you are.
+</p>
+</section>
+
+<section class="summary-card">
+<div class="section-kicker">PERSONALIZED ANALYSIS</div>
+<h2>What your answers suggest</h2>
+<p class="report-paragraph">{{ paragraph }}</p>
+
+<div class="mini-stats">
+<div>
+<strong>{{ answered }}</strong>
+<span>specific choices</span>
+</div>
+<div>
+<strong>{{ unsure }}</strong>
+<span>unsure answers</span>
+</div>
+<div>
+<strong>15</strong>
+<span>total questions</span>
+</div>
+</div>
+</section>
+
+<div class="columns">
+<section class="panel">
+<div class="section-kicker">INTEREST PROFILE</div>
+<h2>Your answer breakdown</h2>
+<p class="muted">
+Each bar shows how many times you selected that field,
+out of 15 questions. These are counts, not skill percentages.
+</p>
+
+{% for key in rank %}
+<div class="score-item">
+<div class="score-line">
+<span>{{ categories[key].name }}</span>
+<strong>{{ scores[key] }} <small>/ 15</small></strong>
+</div>
+<div class="score-track">
+<div style="width:{{ (scores[key] / total * 100)|round(1) }}%"></div>
+</div>
+</div>
+{% endfor %}
+
+<p class="muted footnote">
+Unsure selections are counted separately ({{ unsure }} of 15).
+</p>
+</section>
+
+<section class="panel">
+<div class="section-kicker">POSSIBLE NEXT DIRECTIONS</div>
+<h2>Careers to investigate</h2>
+<p class="muted">
+Examples linked to the areas you selected most often;
+not guaranteed matches.
+</p>
+
+{% for key in recommended %}
+<div class="career-group">
+<strong>{{ categories[key].name }}</strong>
+<ul>
+{% for career in categories[key].careers %}
+<li>{{ career }}</li>
+{% endfor %}
+</ul>
+</div>
+{% endfor %}
+</section>
+</div>
+
+<section class="projects">
+<div class="section-kicker">HANDS-ON EXPLORATION</div>
+<h2>Try it before you decide.</h2>
+<p class="muted">
+Free, small experiments are more useful than trusting a quiz alone.
+Try one from each area and reflect on what you enjoyed.
+</p>
+
+<div class="project-grid">
+{% for key in recommended %}
+{% for name, description, duration in categories[key].experiments %}
+<article class="project">
+<div class="project-tag">
+{{ categories[key].short }} · {{ duration }}
+</div>
+<h3>{{ name }}</h3>
+<p>{{ description }}</p>
+<div class="reflection">
+Afterward ask: Would I do this again?
+</div>
+</article>
+{% endfor %}
+{% endfor %}
+</div>
+</section>
+
+<div class="actions">
+<a class="button" href="{{ url_for('index') }}">
+↻ &nbsp; Retake assessment
+</a>
+<button class="button button-outline"
+onclick="window.print()" type="button">
+Print / Save as PDF
+</button>
+</div>
+
+</main>
+
+<footer class="footer">
+Interpret cautiously. Results reflect preferences selected today,
+not measured abilities or a validated career assessment.
+</footer>
+
+</div>
+</body>
+</html>
